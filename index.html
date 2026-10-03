@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Find your name and see your seat light up on the evening seating plan."
+    />
+    <title>Guest List · Find your seat</title>
+    <style>
+      :root { color-scheme: dark; --paper: #111310; --panel: #191c17; --ink: #f1eee6; --muted: #a1a597; --line: #30352b; --gold: #dbc38c; }
+      * { box-sizing: border-box; }
+      html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+      body { margin: 0; min-height: 100svh; background: var(--paper); color: var(--ink); font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      button, input { font: inherit; }
+      button, summary { -webkit-tap-highlight-color: transparent; }
+      .shell { width: min(100%, 520px); min-height: 100svh; margin: auto; padding: 0 24px 24px; display: flex; flex-direction: column; }
+      .topbar { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
+      .event-name, .event-date { margin: 0; font-size: .65rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+      .event-name { color: var(--gold); }
+      .event-date { color: var(--muted); }
+      main { flex: 1; padding: 38px 0 28px; }
+      .eyebrow { margin: 0 0 13px; color: var(--muted); font-size: .65rem; letter-spacing: .15em; text-transform: uppercase; }
+      h1 { margin: 0; font: 400 clamp(3rem, 13vw, 4rem)/1.02 Georgia, serif; letter-spacing: -.05em; }
+      h1 em { color: var(--gold); font-weight: 400; }
+      .intro { margin: 14px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.6; }
+      .finder { margin-top: 28px; }
+      label { display: block; margin-bottom: 10px; color: var(--muted); font-size: .65rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+      .input-wrap { position: relative; }
+      .search-symbol { position: absolute; top: 50%; left: 19px; width: 15px; height: 15px; border: 1.5px solid var(--muted); border-radius: 50%; transform: translateY(-60%); pointer-events: none; }
+      .search-symbol::after { content: ""; position: absolute; right: -4px; bottom: -2px; width: 6px; height: 1.5px; background: var(--muted); transform: rotate(45deg); }
+      input { width: 100%; height: 56px; padding: 0 49px; border: 1px solid var(--line); border-radius: 12px; outline: none; color: var(--ink); background: var(--panel); font-size: 16px; }
+      input::placeholder { color: #8d9384; }
+      input::-webkit-search-cancel-button { display: none; }
+      input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px #dbc38c0b; }
+      .clear-button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: none; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; font-size: 1.3rem; }
+      .clear-button.visible { display: grid; }
+      .clear-button:hover { color: var(--ink); background: #ffffff08; }
+      .results { margin-top: 16px; }
+      .prompt-state, .empty-state { padding: 18px 0 6px; }
+      .state-title { margin: 0 0 7px; font: 400 1.15rem Georgia, serif; }
+      .state-copy { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.6; }
+      .match-detail { margin: 0 0 6px; color: var(--muted); font-size: .72rem; }
+      .match-list { margin: 0; padding: 0; list-style: none; }
+      .match { width: 100%; min-height: 75px; padding: 13px 0; display: flex; align-items: center; justify-content: space-between; gap: 18px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: inherit; text-align: left; cursor: pointer; }
+      .match:hover { background: #dbc38c06; }
+      .match-name { font: 400 1.1rem/1.4 Georgia, serif; overflow-wrap: anywhere; }
+      .seat { flex: 0 0 58px; padding: 8px; border: 1px solid #dbc38c33; border-radius: 10px; text-align: center; background: #dbc38c08; }
+      .seat small { display: block; margin-bottom: 2px; color: var(--muted); font-size: .5rem; letter-spacing: .08em; text-transform: uppercase; }
+      .seat strong { color: var(--gold); font: 400 1.35rem Georgia, serif; }
+      .confirmation { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+      .confirmed-label { margin: 0 0 6px; color: var(--gold); font-size: .59rem; letter-spacing: .1em; text-transform: uppercase; }
+      .confirmed-name { margin: 0; font: 400 1.3rem/1.3 Georgia, serif; overflow-wrap: anywhere; }
+      .seat-caption { margin: 7px 0 0; color: var(--muted); font-size: .75rem; }
+      .selected-number { flex-shrink: 0; color: var(--gold); font: 400 2.8rem Georgia, serif; }
+      .selected-number small { display: block; color: var(--muted); font: 500 .55rem sans-serif; letter-spacing: .08em; text-transform: uppercase; text-align: center; }
+      .back-button { min-height: 42px; margin-top: 12px; padding: 8px 0; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: .78rem; text-underline-offset: 4px; }
+      .back-button:hover { color: var(--ink); text-decoration: underline; }
+      .layout { margin-top: 26px; padding: 0 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); scroll-margin-top: 16px; }
+      .layout summary { min-height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; font: 400 1.15rem Georgia, serif; }
+      .layout summary::-webkit-details-marker { display: none; }
+      .layout summary::after { content: "+"; color: var(--muted); font: 400 1.15rem sans-serif; }
+      .layout[open] summary::after { content: "−"; }
+      .layout-copy { margin: 0 0 6px; color: var(--muted); font-size: .77rem; line-height: 1.5; }
+      .layout-copy.selected { color: var(--gold); }
+      .venue-map { display: block; width: 100%; height: auto; margin: 8px 0; overflow: visible; }
+      .venue-map text { font-family: inherit; }
+      .plan-seat { fill: #353c2d; stroke: #778363; stroke-width: .7; transition: fill 180ms ease; }
+      .plan-seat.unassigned { fill: #22261e; stroke: #515b43; opacity: .6; }
+      .plan-seat.active { fill: #ffe2a0; stroke: #fff4d2; stroke-width: 1.4; filter: url(#seat-glow); }
+      .seat-halo { fill: #dbc38c22; stroke: var(--gold); stroke-width: .9; }
+      .map-legend { display: flex; justify-content: center; gap: 18px; padding-bottom: 18px; color: var(--muted); font-size: .65rem; }
+      .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+      .legend-dot { width: 7px; height: 7px; border-radius: 2px; background: #778363; }
+      .legend-dot.yours { background: #ffe2a0; box-shadow: 0 0 9px #dbc38c80; }
+      .plan-source { display: inline-block; margin-bottom: 18px; color: var(--muted); font-size: .72rem; text-underline-offset: 4px; }
+      footer { padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .68rem; line-height: 1.6; }
+      :is(button, summary, a):focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+      .layout:focus { outline: none; }
+      body.seat-view-open { overflow: hidden; }
+      .seat-dialog { width: min(520px, calc(100% - 24px)); height: min(760px, calc(100dvh - 24px)); max-height: calc(100dvh - 24px); max-width: none; margin: auto; padding: 22px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); color: var(--ink); overflow: hidden; }
+      .seat-dialog[open] { display: flex; flex-direction: column; gap: 12px; }
+      .seat-dialog::backdrop { background: #070906dd; backdrop-filter: blur(6px); }
+      .seat-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-shrink: 0; }
+      .seat-dialog-header > div:first-child { min-width: 0; }
+      .seat-dialog .confirmed-name { font-size: clamp(1.05rem, 4.5vw, 1.5rem); }
+      .seat-dialog .selected-number { font-size: 3.2rem; }
+      .seat-dialog-location { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.4; flex-shrink: 0; }
+      .seat-dialog-map { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+      .seat-dialog .venue-map { width: 100%; height: 100%; max-height: 100%; margin: 0; overflow: hidden; }
+      .seat-dialog .map-legend { flex-shrink: 0; padding: 0; }
+      .seat-dialog-back { flex-shrink: 0; min-height: 44px; width: 100%; border: 1px solid #dbc38c45; border-radius: 10px; background: #dbc38c0a; color: var(--gold); cursor: pointer; font-size: .82rem; }
+      .seat-dialog-back:hover { background: #dbc38c15; }
+      .seat-dialog:focus { outline: none; }
+      @media (max-height: 620px) { .seat-dialog { padding: 14px; } .seat-dialog[open] { gap: 8px; } .seat-dialog .selected-number { font-size: 2.4rem; } }
+      @media (max-width: 380px) { .shell { padding: 0 18px 20px; } main { padding-top: 30px; } h1 { font-size: 2.9rem; } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <p class="event-name">Guest List</p>
+        <p class="event-date" id="guest-count"></p>
+      </header>
+
+      <main>
+        <section aria-labelledby="page-title">
+          <p class="eyebrow">An evening together</p>
+          <h1 id="page-title">Find your <em>seat.</em></h1>
+          <p class="intro">Search your name. We’ll show you where to sit.</p>
+        </section>
+
+        <section class="finder" aria-label="Guest seat finder">
+          <div class="search-area">
+            <label for="guest-search">Name or seat number</label>
+            <div class="input-wrap">
+              <span class="search-symbol" aria-hidden="true"></span>
+              <input
+                id="guest-search"
+                type="search"
+                inputmode="search"
+                placeholder="Start typing a name or number…"
+                autocomplete="off"
+                spellcheck="false"
+                aria-controls="results"
+              />
+              <button class="clear-button" type="button" aria-label="Clear search">×</button>
+            </div>
+          </div>
+          <div id="results" class="results" aria-live="polite"></div>
+        </section>
+        <details class="layout" tabindex="-1">
+          <summary><span id="map-heading">Seating plan</span></summary>
+          <p class="layout-copy" id="map-status" aria-live="polite">54 seats. The stage is at the top of the map.</p>
+          <svg class="venue-map" viewBox="0 0 400 440" role="img" aria-labelledby="map-title map-description">
+            <title id="map-title">Evening seating layout</title>
+            <desc id="map-description">Seats 1 to 27 go down the left side from the stage. Seats 28 to 54 go down the right side from the stage. Seats 52 to 54 are unassigned.</desc>
+            <defs>
+              <filter id="seat-glow" x="-200%" y="-200%" width="500%" height="500%">
+                <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ffe2a0" flood-opacity=".85" />
+                <feDropShadow dx="0" dy="0" stdDeviation="1.5" flood-color="#fff4d2" flood-opacity="1" />
+              </filter>
+            </defs>
+            <rect x="130" y="12" width="140" height="24" rx="5" fill="#22261e" stroke="#353d2d" />
+            <text x="200" y="28" text-anchor="middle" fill="#a1a597" font-size="9" letter-spacing="1.3">BALCONY</text>
+            <rect x="65" y="56" width="270" height="48" rx="10" fill="#252b20" stroke="#697454" />
+            <text x="200" y="85" text-anchor="middle" fill="#dbc38c" font-size="11" letter-spacing="2">STAGE</text>
+            <circle cx="200" cy="245" r="112" fill="#151913" stroke="#343d2c" stroke-dasharray="3 5" />
+            <g fill="none" stroke="#526040" stroke-width="14">
+              <path d="M 92.69 169.86 A 131 131 0 0 0 166.09 371.54" />
+              <path d="M 307.31 169.86 A 131 131 0 0 1 233.91 371.54" />
+            </g>
+            <g fill="none" stroke="#293323" stroke-width="12">
+              <path d="M 92.69 169.86 A 131 131 0 0 0 166.09 371.54" />
+              <path d="M 307.31 169.86 A 131 131 0 0 1 233.91 371.54" />
+            </g>
+            <text x="200" y="244" text-anchor="middle" fill="#c2c6b8" font-size="16">Dance floor</text>
+            <text x="200" y="264" text-anchor="middle" fill="#89927b" font-size="9" letter-spacing="1">13 × 13 m</text>
+            <g id="map-seats">
+              <rect class="plan-seat" data-seat="1" data-x="77.13" data-y="158.96" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(77.13 158.96) rotate(-55.00)"><title>Seat 1</title></rect>
+              <rect class="plan-seat" data-seat="2" data-x="71.11" data-y="168.26" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(71.11 168.26) rotate(-59.23)"><title>Seat 2</title></rect>
+              <rect class="plan-seat" data-seat="3" data-x="65.80" data-y="177.98" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(65.80 177.98) rotate(-63.46)"><title>Seat 3</title></rect>
+              <rect class="plan-seat" data-seat="4" data-x="61.23" data-y="188.06" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(61.23 188.06) rotate(-67.69)"><title>Seat 4</title></rect>
+              <rect class="plan-seat" data-seat="5" data-x="57.40" data-y="198.46" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(57.40 198.46) rotate(-71.92)"><title>Seat 5</title></rect>
+              <rect class="plan-seat" data-seat="6" data-x="54.36" data-y="209.10" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(54.36 209.10) rotate(-76.15)"><title>Seat 6</title></rect>
+              <rect class="plan-seat" data-seat="7" data-x="52.11" data-y="219.94" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(52.11 219.94) rotate(-80.38)"><title>Seat 7</title></rect>
+              <rect class="plan-seat" data-seat="8" data-x="50.66" data-y="230.92" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(50.66 230.92) rotate(-84.62)"><title>Seat 8</title></rect>
+              <rect class="plan-seat" data-seat="9" data-x="50.03" data-y="241.98" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(50.03 241.98) rotate(-88.85)"><title>Seat 9</title></rect>
+              <rect class="plan-seat" data-seat="10" data-x="50.22" data-y="253.05" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(50.22 253.05) rotate(-93.08)"><title>Seat 10</title></rect>
+              <rect class="plan-seat" data-seat="11" data-x="51.22" data-y="264.08" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(51.22 264.08) rotate(-97.31)"><title>Seat 11</title></rect>
+              <rect class="plan-seat" data-seat="12" data-x="53.03" data-y="275.00" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(53.03 275.00) rotate(-101.54)"><title>Seat 12</title></rect>
+              <rect class="plan-seat" data-seat="13" data-x="55.65" data-y="285.76" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(55.65 285.76) rotate(-105.77)"><title>Seat 13</title></rect>
+              <rect class="plan-seat" data-seat="14" data-x="59.05" data-y="296.30" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(59.05 296.30) rotate(-110.00)"><title>Seat 14</title></rect>
+              <rect class="plan-seat" data-seat="15" data-x="63.22" data-y="306.56" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(63.22 306.56) rotate(-114.23)"><title>Seat 15</title></rect>
+              <rect class="plan-seat" data-seat="16" data-x="68.13" data-y="316.49" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(68.13 316.49) rotate(-118.46)"><title>Seat 16</title></rect>
+              <rect class="plan-seat" data-seat="17" data-x="73.76" data-y="326.02" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(73.76 326.02) rotate(-122.69)"><title>Seat 17</title></rect>
+              <rect class="plan-seat" data-seat="18" data-x="80.08" data-y="335.11" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(80.08 335.11) rotate(-126.92)"><title>Seat 18</title></rect>
+              <rect class="plan-seat" data-seat="19" data-x="87.06" data-y="343.71" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(87.06 343.71) rotate(-131.15)"><title>Seat 19</title></rect>
+              <rect class="plan-seat" data-seat="20" data-x="94.65" data-y="351.78" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(94.65 351.78) rotate(-135.38)"><title>Seat 20</title></rect>
+              <rect class="plan-seat" data-seat="21" data-x="102.81" data-y="359.26" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(102.81 359.26) rotate(-139.62)"><title>Seat 21</title></rect>
+              <rect class="plan-seat" data-seat="22" data-x="111.51" data-y="366.12" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(111.51 366.12) rotate(-143.85)"><title>Seat 22</title></rect>
+              <rect class="plan-seat" data-seat="23" data-x="120.68" data-y="372.31" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(120.68 372.31) rotate(-148.08)"><title>Seat 23</title></rect>
+              <rect class="plan-seat" data-seat="24" data-x="130.29" data-y="377.82" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(130.29 377.82) rotate(-152.31)"><title>Seat 24</title></rect>
+              <rect class="plan-seat" data-seat="25" data-x="140.28" data-y="382.60" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(140.28 382.60) rotate(-156.54)"><title>Seat 25</title></rect>
+              <rect class="plan-seat" data-seat="26" data-x="150.59" data-y="386.63" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(150.59 386.63) rotate(-160.77)"><title>Seat 26</title></rect>
+              <rect class="plan-seat" data-seat="27" data-x="161.18" data-y="389.89" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(161.18 389.89) rotate(-165.00)"><title>Seat 27</title></rect>
+              <rect class="plan-seat" data-seat="28" data-x="322.87" data-y="158.96" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(322.87 158.96) rotate(55.00)"><title>Seat 28</title></rect>
+              <rect class="plan-seat" data-seat="29" data-x="328.89" data-y="168.26" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(328.89 168.26) rotate(59.23)"><title>Seat 29</title></rect>
+              <rect class="plan-seat" data-seat="30" data-x="334.20" data-y="177.98" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(334.20 177.98) rotate(63.46)"><title>Seat 30</title></rect>
+              <rect class="plan-seat" data-seat="31" data-x="338.77" data-y="188.06" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(338.77 188.06) rotate(67.69)"><title>Seat 31</title></rect>
+              <rect class="plan-seat" data-seat="32" data-x="342.60" data-y="198.46" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(342.60 198.46) rotate(71.92)"><title>Seat 32</title></rect>
+              <rect class="plan-seat" data-seat="33" data-x="345.64" data-y="209.10" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(345.64 209.10) rotate(76.15)"><title>Seat 33</title></rect>
+              <rect class="plan-seat" data-seat="34" data-x="347.89" data-y="219.94" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(347.89 219.94) rotate(80.38)"><title>Seat 34</title></rect>
+              <rect class="plan-seat" data-seat="35" data-x="349.34" data-y="230.92" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(349.34 230.92) rotate(84.62)"><title>Seat 35</title></rect>
+              <rect class="plan-seat" data-seat="36" data-x="349.97" data-y="241.98" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(349.97 241.98) rotate(88.85)"><title>Seat 36</title></rect>
+              <rect class="plan-seat" data-seat="37" data-x="349.78" data-y="253.05" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(349.78 253.05) rotate(93.08)"><title>Seat 37</title></rect>
+              <rect class="plan-seat" data-seat="38" data-x="348.78" data-y="264.08" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(348.78 264.08) rotate(97.31)"><title>Seat 38</title></rect>
+              <rect class="plan-seat" data-seat="39" data-x="346.97" data-y="275.00" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(346.97 275.00) rotate(101.54)"><title>Seat 39</title></rect>
+              <rect class="plan-seat" data-seat="40" data-x="344.35" data-y="285.76" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(344.35 285.76) rotate(105.77)"><title>Seat 40</title></rect>
+              <rect class="plan-seat" data-seat="41" data-x="340.95" data-y="296.30" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(340.95 296.30) rotate(110.00)"><title>Seat 41</title></rect>
+              <rect class="plan-seat" data-seat="42" data-x="336.78" data-y="306.56" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(336.78 306.56) rotate(114.23)"><title>Seat 42</title></rect>
+              <rect class="plan-seat" data-seat="43" data-x="331.87" data-y="316.49" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(331.87 316.49) rotate(118.46)"><title>Seat 43</title></rect>
+              <rect class="plan-seat" data-seat="44" data-x="326.24" data-y="326.02" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(326.24 326.02) rotate(122.69)"><title>Seat 44</title></rect>
+              <rect class="plan-seat" data-seat="45" data-x="319.92" data-y="335.11" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(319.92 335.11) rotate(126.92)"><title>Seat 45</title></rect>
+              <rect class="plan-seat" data-seat="46" data-x="312.94" data-y="343.71" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(312.94 343.71) rotate(131.15)"><title>Seat 46</title></rect>
+              <rect class="plan-seat" data-seat="47" data-x="305.35" data-y="351.78" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(305.35 351.78) rotate(135.38)"><title>Seat 47</title></rect>
+              <rect class="plan-seat" data-seat="48" data-x="297.19" data-y="359.26" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(297.19 359.26) rotate(139.62)"><title>Seat 48</title></rect>
+              <rect class="plan-seat" data-seat="49" data-x="288.49" data-y="366.12" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(288.49 366.12) rotate(143.85)"><title>Seat 49</title></rect>
+              <rect class="plan-seat" data-seat="50" data-x="279.32" data-y="372.31" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(279.32 372.31) rotate(148.08)"><title>Seat 50</title></rect>
+              <rect class="plan-seat" data-seat="51" data-x="269.71" data-y="377.82" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(269.71 377.82) rotate(152.31)"><title>Seat 51</title></rect>
+              <rect class="plan-seat unassigned" data-seat="52" data-x="259.72" data-y="382.60" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(259.72 382.60) rotate(156.54)"><title>Seat 52 · Unassigned</title></rect>
+              <rect class="plan-seat unassigned" data-seat="53" data-x="249.41" data-y="386.63" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(249.41 386.63) rotate(160.77)"><title>Seat 53 · Unassigned</title></rect>
+              <rect class="plan-seat unassigned" data-seat="54" data-x="238.82" data-y="389.89" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(238.82 389.89) rotate(165.00)"><title>Seat 54 · Unassigned</title></rect>
+            </g>
+            <g fill="#a1a597" font-size="10" text-anchor="middle">
+              <text x="69" y="141">1</text><text x="331" y="141">28</text>
+              <text x="153" y="418">27</text><text x="247" y="418">54</text>
+            </g>
+            <g id="seat-marker" aria-hidden="true"></g>
+          </svg>
+          <div class="map-legend"><span><i class="legend-dot yours" aria-hidden="true"></i>Your seat</span><span><i class="legend-dot" aria-hidden="true"></i>Other seats</span></div>
+          <a class="plan-source" href="seating-plan.pdf" target="_blank" rel="noopener">Original floor plan ↗</a>
+        </details>
+      </main>
+
+      <footer>
+        <span>Need help? Ask a member of the welcome team.</span>
+      </footer>
+    </div>
+
+    <dialog class="seat-dialog" aria-labelledby="dialog-name" aria-describedby="dialog-location" tabindex="-1">
+      <div class="seat-dialog-header">
+        <div>
+          <p class="confirmed-label">Your place for the evening</p>
+          <h2 class="confirmed-name" id="dialog-name"></h2>
+        </div>
+        <div class="selected-number"><small>Seat</small><span id="dialog-number"></span></div>
+      </div>
+      <p class="seat-dialog-location" id="dialog-location"></p>
+      <div class="seat-dialog-map"></div>
+      <div class="map-legend"><span><i class="legend-dot yours" aria-hidden="true"></i>Your glowing seat</span></div>
+      <button class="seat-dialog-back" type="button">← Search another guest</button>
+    </dialog>
+
+    <script>
+      // Update this list for your next event.
+      const guests = [
+  {
+    "name": "Dias Suleimenov",
+    "number": 1
+  },
+  {
+    "name": "Alina Suleimenova",
+    "number": 2
+  },
+  {
+    "name": "Sofiya Suleimenova",
+    "number": 3
+  },
+  {
+    "name": "Timur Suleimenov",
+    "number": 4
+  },
+  {
+    "name": "Amina Ramazanova",
+    "number": 5
+  },
+  {
+    "name": "Nursultan Suleimenov",
+    "number": 6
+  },
+  {
+    "name": "Sara Suleimenova",
+    "number": 7
+  },
+  {
+    "name": "Antoine Khairallah",
+    "number": 8
+  },
+  {
+    "name": "Anwar Rizk",
+    "number": 9
+  },
+  {
+    "name": "Nour Rizk",
+    "number": 10
+  },
+  {
+    "name": "Rachid Rizk",
+    "number": 11
+  },
+  {
+    "name": "Chahrazad Rizk",
+    "number": 12
+  },
+  {
+    "name": "Monika Schmutz",
+    "number": 13
+  },
+  {
+    "name": "Lubna Allana",
+    "number": 14
+  },
+  {
+    "name": "Tabbassum Sajwani",
+    "number": 15
+  },
+  {
+    "name": "Anel Udovichuk конина",
+    "number": 16
+  },
+  {
+    "name": "Aida Aliyeva",
+    "number": 17
+  },
+  {
+    "name": "Nurali Aliyev",
+    "number": 18
+  },
+  {
+    "name": "Julia Fomichev",
+    "number": 19
+  },
+  {
+    "name": "Hesham Amer",
+    "number": 20
+  },
+  {
+    "name": "H.S.H. Princess Tilsim von Liechtenstein",
+    "number": 21
+  },
+  {
+    "name": "H.S.H. Princess Laetitia von Liechtenstein",
+    "number": 22
+  },
+  {
+    "name": "Carol Asscher",
+    "number": 23
+  },
+  {
+    "name": "Simon de Puri",
+    "number": 24
+  },
+  {
+    "name": "Svetlana Cheshinskya",
+    "number": 25
+  },
+  {
+    "name": "Rustam Aksenenko",
+    "number": 26
+  },
+  {
+    "name": "Polina Aksenenko",
+    "number": 27
+  },
+  {
+    "name": "Alexandra de Pfyfer",
+    "number": 28
+  },
+  {
+    "name": "Nachson Mimran",
+    "number": 29
+  },
+  {
+    "name": "Nathalia Mimran",
+    "number": 30
+  },
+  {
+    "name": "Arieh Mimran",
+    "number": 31
+  },
+  {
+    "name": "Petra Nemcova",
+    "number": 32
+  },
+  {
+    "name": "Benjamin Larretche",
+    "number": 33
+  },
+  {
+    "name": "Bodhi",
+    "number": 34
+  },
+  {
+    "name": "Iman de Saussure",
+    "number": 35
+  },
+  {
+    "name": "Jacques de Saussure",
+    "number": 36
+  },
+  {
+    "name": "Caroline Scheufele",
+    "number": 37
+  },
+  {
+    "name": "Olga Vashilina",
+    "number": 38
+  },
+  {
+    "name": "Valentina Volchkova",
+    "number": 39
+  },
+  {
+    "name": "Jean-Christophe",
+    "number": 40
+  },
+  {
+    "name": "Clarina Hocke",
+    "number": 41
+  },
+  {
+    "name": "Swami Chidananda",
+    "number": 42
+  },
+  {
+    "name": "Nastya Stopnevich",
+    "number": 43
+  },
+  {
+    "name": "Sergei Stopnevich",
+    "number": 44
+  },
+  {
+    "name": "Anastasia Bukhman",
+    "number": 45
+  },
+  {
+    "name": "Angelo Brambilla",
+    "number": 46
+  },
+  {
+    "name": "Olivier Gudin",
+    "number": 47
+  },
+  {
+    "name": "Sara Hekal",
+    "number": 48
+  },
+  {
+    "name": "Polina Kitsenko",
+    "number": 49
+  },
+  {
+    "name": "Roman Yemeljanov",
+    "number": 50
+  },
+  {
+    "name": "Kristina Yemeljanova",
+    "number": 51
+  }
+];
+
+      const input = document.querySelector("#guest-search");
+      const results = document.querySelector("#results");
+      const clearButton = document.querySelector(".clear-button");
+      const layout = document.querySelector(".layout");
+      const mapStatus = document.querySelector("#map-status");
+      const mapHeading = document.querySelector("#map-heading");
+      const mapDescription = document.querySelector("#map-description");
+      const marker = document.querySelector("#seat-marker");
+      const seatDialog = document.querySelector(".seat-dialog");
+      const venueMap = document.querySelector(".venue-map");
+      const mapHomeLegend = layout.querySelector(".map-legend");
+      const dialogMap = document.querySelector(".seat-dialog-map");
+      const defaultDescription = mapDescription.textContent;
+      document.querySelector("#guest-count").textContent = guests.length + " guests";
+
+      const normalize = value => value.toLocaleLowerCase("en").normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+      function scoreGuest(guest, query) {
+        if (/^\d+$/.test(query)) return guest.number === Number(query) ? 1000 : 0;
+        const target = normalize(guest.name);
+        if (target === query) return 1000;
+        if (target.startsWith(query)) return 800;
+        if (target.includes(query)) return 700;
+        const words = target.split(/\s+/);
+        return query.split(/\s+/).every(word => words.some(part => part.includes(word))) ? 600 : 0;
+      }
+      function escapeHtml(value) {
+        const span = document.createElement("span");
+        span.textContent = String(value);
+        return span.innerHTML;
+      }
+      function clearSelectedSeat() {
+        document.querySelectorAll(".plan-seat.active").forEach(seat => seat.classList.remove("active"));
+        marker.replaceChildren();
+        mapHeading.textContent = "Seating plan";
+        mapStatus.textContent = "54 seats. The stage is at the top of the map.";
+        mapStatus.classList.remove("selected");
+        mapDescription.textContent = defaultDescription;
+      }
+      function seatLocation(number) {
+        // Numbering confirmed by the event organizer:
+        // 1–27 down the left side; 28–54 down the right side from the stage.
+        const side = number <= 27 ? "Left" : "Right";
+        const position = number <= 27 ? number : number - 27;
+        return side + " table · position " + position + " from the stage";
+      }
+      function showSeat(guest) {
+        clearSelectedSeat();
+        const seat = document.querySelector('.plan-seat[data-seat="' + guest.number + '"]');
+        if (!seat) return;
+        seat.classList.add("active");
+        const x = Number(seat.dataset.x);
+        const y = Number(seat.dataset.y);
+        const badgeX = x + (x < 200 ? 34 : -34);
+        marker.innerHTML = '<circle class="seat-halo" cx="' + x + '" cy="' + y + '" r="12"/>' +
+          '<line x1="' + x + '" y1="' + y + '" x2="' + badgeX + '" y2="' + y + '" stroke="#dbc38c" stroke-width=".8"/>' +
+          '<rect x="' + (badgeX - 13) + '" y="' + (y - 10) + '" width="26" height="20" rx="6" fill="#ffe2a0"/>' +
+          '<text x="' + badgeX + '" y="' + (y + 3.5) + '" text-anchor="middle" fill="#111310" font-size="11" font-weight="650">' + guest.number + '</text>';
+        mapHeading.textContent = "Your seat";
+        mapStatus.textContent = "Seat " + guest.number + " · " + seatLocation(guest.number);
+        mapStatus.classList.add("selected");
+        mapDescription.textContent = guest.name + ", seat " + guest.number + ". " + seatLocation(guest.number) + ". Your chair is highlighted in gold. " + defaultDescription;
+        document.querySelector("#dialog-name").textContent = guest.name;
+        document.querySelector("#dialog-number").textContent = guest.number;
+        document.querySelector("#dialog-location").textContent = seatLocation(guest.number);
+        dialogMap.appendChild(venueMap);
+        document.body.classList.add("seat-view-open");
+        seatDialog.showModal();
+        seatDialog.focus({ preventScroll: true });
+      }
+      function showPrompt() {
+        results.innerHTML = '<div class="prompt-state"><p class="state-copy">Type a name, then tap the seat number to see it on the map.</p></div>';
+      }
+      function showNoResults() {
+        results.innerHTML = '<div class="empty-state"><h2 class="state-title">No guest found</h2><p class="state-copy">Try a first name or surname, or ask the welcome team.</p></div>';
+      }
+      function selectGuest(guest) {
+        showSeat(guest);
+      }
+      function closeSeatView() {
+        if (seatDialog.open) seatDialog.close();
+        layout.insertBefore(venueMap, mapHomeLegend);
+        document.body.classList.remove("seat-view-open");
+        clearSelectedSeat();
+      }
+      function resetSearch() {
+        closeSeatView();
+        input.value = "";
+        layout.open = false;
+        updateResults();
+        input.focus();
+      }
+      function updateResults() {
+        clearSelectedSeat();
+        const query = normalize(input.value);
+        clearButton.classList.toggle("visible", Boolean(input.value));
+        if (!query) { showPrompt(); return; }
+        const matches = guests.map(guest => ({ guest, score: scoreGuest(guest, query) }))
+          .filter(item => item.score > 0)
+          .sort((a, b) => b.score - a.score || a.guest.number - b.guest.number);
+        if (!matches.length) { showNoResults(); return; }
+        results.innerHTML = '<p class="match-detail">' + matches.length + (matches.length === 1 ? ' guest' : ' guests') + ' found · Tap to find your seat</p><ul class="match-list" aria-label="Matching guests">' +
+          matches.map(({ guest }) => '<li><button class="match" type="button" data-number="' + guest.number + '" aria-label="' + escapeHtml(guest.name).replace(/"/g, '&quot;') + ', seat ' + guest.number + '. Show on map"><span class="match-name">' + escapeHtml(guest.name) + '</span><span class="seat"><small>Seat</small><strong>' + guest.number + '</strong></span></button></li>').join("") + '</ul>';
+        results.querySelectorAll(".match").forEach(button => {
+          button.addEventListener("click", () => {
+            const guest = guests.find(item => item.number === Number(button.dataset.number));
+            if (guest) selectGuest(guest);
+          });
+        });
+      }
+      input.addEventListener("input", updateResults);
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          const bestMatch = results.querySelector(".match");
+          if (bestMatch) { event.preventDefault(); bestMatch.click(); }
+        } else if (event.key === "Escape") { resetSearch(); }
+      });
+      clearButton.addEventListener("click", resetSearch);
+      document.querySelector(".seat-dialog-back").addEventListener("click", resetSearch);
+      seatDialog.addEventListener("cancel", event => {
+        event.preventDefault();
+        closeSeatView();
+      });
+      showPrompt();
+    </script>
+  </body>
+</html>
