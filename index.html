@@ -87,6 +87,12 @@
       .seat-dialog .confirmed-name { font-size: clamp(1.05rem, 4.5vw, 1.5rem); }
       .seat-dialog .selected-number { font-size: 3.2rem; }
       .seat-dialog-location { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.4; flex-shrink: 0; }
+      .guest-notes { flex-shrink: 0; padding: 10px 12px; border-left: 2px solid var(--gold); border-radius: 6px; background: #dbc38c08; }
+      .guest-notes[hidden] { display: none; }
+      .guest-notes p { margin: 0; }
+      .guest-notes p + p { margin-top: 9px; }
+      .guest-note-label { display: block; margin-bottom: 4px; color: var(--gold); font-size: .57rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
+      .guest-note-copy { display: block; color: var(--ink); font-size: .75rem; line-height: 1.4; }
       .seat-dialog-map { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
       .seat-dialog .venue-map { width: 100%; height: 100%; max-height: 100%; margin: 0; overflow: hidden; }
       .seat-dialog .map-legend { flex-shrink: 0; padding: 0; }
@@ -133,10 +139,10 @@
         </section>
         <details class="layout" tabindex="-1">
           <summary><span id="map-heading">Seating plan</span></summary>
-          <p class="layout-copy" id="map-status" aria-live="polite">54 seats. The stage is at the top of the map.</p>
+          <p class="layout-copy" id="map-status" aria-live="polite">47 seats: 23 on the left, 24 on the right. The stage is at the top.</p>
           <svg class="venue-map" viewBox="0 0 400 440" role="img" aria-labelledby="map-title map-description">
             <title id="map-title">Evening seating layout</title>
-            <desc id="map-description">Seats 1 to 27 go down the left side from the stage. Seats 28 to 54 go down the right side from the stage. Seats 52 to 54 are unassigned.</desc>
+            <desc id="map-description">Seats 1 to 23 go down the left table from the stage. Seats 24 to 47 go down the right table from the stage. Each of the 47 guests has one assigned chair.</desc>
             <defs>
               <filter id="seat-glow" x="-200%" y="-200%" width="500%" height="500%">
                 <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ffe2a0" flood-opacity=".85" />
@@ -145,8 +151,8 @@
             </defs>
             <rect x="130" y="12" width="140" height="24" rx="5" fill="#22261e" stroke="#353d2d" />
             <text x="200" y="28" text-anchor="middle" fill="#a1a597" font-size="9" letter-spacing="1.3">BALCONY</text>
-            <rect x="65" y="56" width="270" height="48" rx="10" fill="#252b20" stroke="#697454" />
-            <text x="200" y="85" text-anchor="middle" fill="#dbc38c" font-size="11" letter-spacing="2">STAGE</text>
+            <rect x="45" y="56" width="310" height="42" rx="10" fill="#252b20" stroke="#697454" />
+            <text x="200" y="81" text-anchor="middle" fill="#dbc38c" font-size="11" letter-spacing="2">STAGE</text>
             <circle cx="200" cy="245" r="112" fill="#151913" stroke="#343d2c" stroke-dasharray="3 5" />
             <g fill="none" stroke="#526040" stroke-width="14">
               <path d="M 92.69 169.86 A 131 131 0 0 0 166.09 371.54" />
@@ -160,63 +166,56 @@
             <text x="200" y="264" text-anchor="middle" fill="#89927b" font-size="9" letter-spacing="1">13 × 13 m</text>
             <g id="map-seats">
               <rect class="plan-seat" data-seat="1" data-x="77.13" data-y="158.96" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(77.13 158.96) rotate(-55.00)"><title>Seat 1</title></rect>
-              <rect class="plan-seat" data-seat="2" data-x="71.11" data-y="168.26" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(71.11 168.26) rotate(-59.23)"><title>Seat 2</title></rect>
-              <rect class="plan-seat" data-seat="3" data-x="65.80" data-y="177.98" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(65.80 177.98) rotate(-63.46)"><title>Seat 3</title></rect>
-              <rect class="plan-seat" data-seat="4" data-x="61.23" data-y="188.06" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(61.23 188.06) rotate(-67.69)"><title>Seat 4</title></rect>
-              <rect class="plan-seat" data-seat="5" data-x="57.40" data-y="198.46" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(57.40 198.46) rotate(-71.92)"><title>Seat 5</title></rect>
-              <rect class="plan-seat" data-seat="6" data-x="54.36" data-y="209.10" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(54.36 209.10) rotate(-76.15)"><title>Seat 6</title></rect>
-              <rect class="plan-seat" data-seat="7" data-x="52.11" data-y="219.94" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(52.11 219.94) rotate(-80.38)"><title>Seat 7</title></rect>
-              <rect class="plan-seat" data-seat="8" data-x="50.66" data-y="230.92" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(50.66 230.92) rotate(-84.62)"><title>Seat 8</title></rect>
-              <rect class="plan-seat" data-seat="9" data-x="50.03" data-y="241.98" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(50.03 241.98) rotate(-88.85)"><title>Seat 9</title></rect>
-              <rect class="plan-seat" data-seat="10" data-x="50.22" data-y="253.05" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(50.22 253.05) rotate(-93.08)"><title>Seat 10</title></rect>
-              <rect class="plan-seat" data-seat="11" data-x="51.22" data-y="264.08" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(51.22 264.08) rotate(-97.31)"><title>Seat 11</title></rect>
-              <rect class="plan-seat" data-seat="12" data-x="53.03" data-y="275.00" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(53.03 275.00) rotate(-101.54)"><title>Seat 12</title></rect>
-              <rect class="plan-seat" data-seat="13" data-x="55.65" data-y="285.76" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(55.65 285.76) rotate(-105.77)"><title>Seat 13</title></rect>
-              <rect class="plan-seat" data-seat="14" data-x="59.05" data-y="296.30" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(59.05 296.30) rotate(-110.00)"><title>Seat 14</title></rect>
-              <rect class="plan-seat" data-seat="15" data-x="63.22" data-y="306.56" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(63.22 306.56) rotate(-114.23)"><title>Seat 15</title></rect>
-              <rect class="plan-seat" data-seat="16" data-x="68.13" data-y="316.49" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(68.13 316.49) rotate(-118.46)"><title>Seat 16</title></rect>
-              <rect class="plan-seat" data-seat="17" data-x="73.76" data-y="326.02" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(73.76 326.02) rotate(-122.69)"><title>Seat 17</title></rect>
-              <rect class="plan-seat" data-seat="18" data-x="80.08" data-y="335.11" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(80.08 335.11) rotate(-126.92)"><title>Seat 18</title></rect>
-              <rect class="plan-seat" data-seat="19" data-x="87.06" data-y="343.71" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(87.06 343.71) rotate(-131.15)"><title>Seat 19</title></rect>
-              <rect class="plan-seat" data-seat="20" data-x="94.65" data-y="351.78" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(94.65 351.78) rotate(-135.38)"><title>Seat 20</title></rect>
-              <rect class="plan-seat" data-seat="21" data-x="102.81" data-y="359.26" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(102.81 359.26) rotate(-139.62)"><title>Seat 21</title></rect>
-              <rect class="plan-seat" data-seat="22" data-x="111.51" data-y="366.12" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(111.51 366.12) rotate(-143.85)"><title>Seat 22</title></rect>
-              <rect class="plan-seat" data-seat="23" data-x="120.68" data-y="372.31" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(120.68 372.31) rotate(-148.08)"><title>Seat 23</title></rect>
-              <rect class="plan-seat" data-seat="24" data-x="130.29" data-y="377.82" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(130.29 377.82) rotate(-152.31)"><title>Seat 24</title></rect>
-              <rect class="plan-seat" data-seat="25" data-x="140.28" data-y="382.60" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(140.28 382.60) rotate(-156.54)"><title>Seat 25</title></rect>
-              <rect class="plan-seat" data-seat="26" data-x="150.59" data-y="386.63" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(150.59 386.63) rotate(-160.77)"><title>Seat 26</title></rect>
-              <rect class="plan-seat" data-seat="27" data-x="161.18" data-y="389.89" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(161.18 389.89) rotate(-165.00)"><title>Seat 27</title></rect>
-              <rect class="plan-seat" data-seat="28" data-x="322.87" data-y="158.96" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(322.87 158.96) rotate(55.00)"><title>Seat 28</title></rect>
-              <rect class="plan-seat" data-seat="29" data-x="328.89" data-y="168.26" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(328.89 168.26) rotate(59.23)"><title>Seat 29</title></rect>
-              <rect class="plan-seat" data-seat="30" data-x="334.20" data-y="177.98" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(334.20 177.98) rotate(63.46)"><title>Seat 30</title></rect>
-              <rect class="plan-seat" data-seat="31" data-x="338.77" data-y="188.06" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(338.77 188.06) rotate(67.69)"><title>Seat 31</title></rect>
-              <rect class="plan-seat" data-seat="32" data-x="342.60" data-y="198.46" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(342.60 198.46) rotate(71.92)"><title>Seat 32</title></rect>
-              <rect class="plan-seat" data-seat="33" data-x="345.64" data-y="209.10" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(345.64 209.10) rotate(76.15)"><title>Seat 33</title></rect>
-              <rect class="plan-seat" data-seat="34" data-x="347.89" data-y="219.94" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(347.89 219.94) rotate(80.38)"><title>Seat 34</title></rect>
-              <rect class="plan-seat" data-seat="35" data-x="349.34" data-y="230.92" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(349.34 230.92) rotate(84.62)"><title>Seat 35</title></rect>
-              <rect class="plan-seat" data-seat="36" data-x="349.97" data-y="241.98" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(349.97 241.98) rotate(88.85)"><title>Seat 36</title></rect>
-              <rect class="plan-seat" data-seat="37" data-x="349.78" data-y="253.05" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(349.78 253.05) rotate(93.08)"><title>Seat 37</title></rect>
-              <rect class="plan-seat" data-seat="38" data-x="348.78" data-y="264.08" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(348.78 264.08) rotate(97.31)"><title>Seat 38</title></rect>
-              <rect class="plan-seat" data-seat="39" data-x="346.97" data-y="275.00" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(346.97 275.00) rotate(101.54)"><title>Seat 39</title></rect>
-              <rect class="plan-seat" data-seat="40" data-x="344.35" data-y="285.76" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(344.35 285.76) rotate(105.77)"><title>Seat 40</title></rect>
-              <rect class="plan-seat" data-seat="41" data-x="340.95" data-y="296.30" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(340.95 296.30) rotate(110.00)"><title>Seat 41</title></rect>
-              <rect class="plan-seat" data-seat="42" data-x="336.78" data-y="306.56" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(336.78 306.56) rotate(114.23)"><title>Seat 42</title></rect>
-              <rect class="plan-seat" data-seat="43" data-x="331.87" data-y="316.49" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(331.87 316.49) rotate(118.46)"><title>Seat 43</title></rect>
-              <rect class="plan-seat" data-seat="44" data-x="326.24" data-y="326.02" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(326.24 326.02) rotate(122.69)"><title>Seat 44</title></rect>
-              <rect class="plan-seat" data-seat="45" data-x="319.92" data-y="335.11" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(319.92 335.11) rotate(126.92)"><title>Seat 45</title></rect>
-              <rect class="plan-seat" data-seat="46" data-x="312.94" data-y="343.71" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(312.94 343.71) rotate(131.15)"><title>Seat 46</title></rect>
-              <rect class="plan-seat" data-seat="47" data-x="305.35" data-y="351.78" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(305.35 351.78) rotate(135.38)"><title>Seat 47</title></rect>
-              <rect class="plan-seat" data-seat="48" data-x="297.19" data-y="359.26" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(297.19 359.26) rotate(139.62)"><title>Seat 48</title></rect>
-              <rect class="plan-seat" data-seat="49" data-x="288.49" data-y="366.12" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(288.49 366.12) rotate(143.85)"><title>Seat 49</title></rect>
-              <rect class="plan-seat" data-seat="50" data-x="279.32" data-y="372.31" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(279.32 372.31) rotate(148.08)"><title>Seat 50</title></rect>
-              <rect class="plan-seat" data-seat="51" data-x="269.71" data-y="377.82" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(269.71 377.82) rotate(152.31)"><title>Seat 51</title></rect>
-              <rect class="plan-seat unassigned" data-seat="52" data-x="259.72" data-y="382.60" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(259.72 382.60) rotate(156.54)"><title>Seat 52 · Unassigned</title></rect>
-              <rect class="plan-seat unassigned" data-seat="53" data-x="249.41" data-y="386.63" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(249.41 386.63) rotate(160.77)"><title>Seat 53 · Unassigned</title></rect>
-              <rect class="plan-seat unassigned" data-seat="54" data-x="238.82" data-y="389.89" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(238.82 389.89) rotate(165.00)"><title>Seat 54 · Unassigned</title></rect>
+              <rect class="plan-seat" data-seat="2" data-x="70.10" data-y="170.00" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(70.10 170.00) rotate(-60.00)"><title>Seat 2</title></rect>
+              <rect class="plan-seat" data-seat="3" data-x="64.05" data-y="181.61" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(64.05 181.61) rotate(-65.00)"><title>Seat 3</title></rect>
+              <rect class="plan-seat" data-seat="4" data-x="59.05" data-y="193.70" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(59.05 193.70) rotate(-70.00)"><title>Seat 4</title></rect>
+              <rect class="plan-seat" data-seat="5" data-x="55.11" data-y="206.18" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(55.11 206.18) rotate(-75.00)"><title>Seat 5</title></rect>
+              <rect class="plan-seat" data-seat="6" data-x="52.28" data-y="218.95" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(52.28 218.95) rotate(-80.00)"><title>Seat 6</title></rect>
+              <rect class="plan-seat" data-seat="7" data-x="50.57" data-y="231.93" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(50.57 231.93) rotate(-85.00)"><title>Seat 7</title></rect>
+              <rect class="plan-seat" data-seat="8" data-x="50.00" data-y="245.00" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(50.00 245.00) rotate(-90.00)"><title>Seat 8</title></rect>
+              <rect class="plan-seat" data-seat="9" data-x="50.57" data-y="258.07" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(50.57 258.07) rotate(-95.00)"><title>Seat 9</title></rect>
+              <rect class="plan-seat" data-seat="10" data-x="52.28" data-y="271.05" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(52.28 271.05) rotate(-100.00)"><title>Seat 10</title></rect>
+              <rect class="plan-seat" data-seat="11" data-x="55.11" data-y="283.82" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(55.11 283.82) rotate(-105.00)"><title>Seat 11</title></rect>
+              <rect class="plan-seat" data-seat="12" data-x="59.05" data-y="296.30" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(59.05 296.30) rotate(-110.00)"><title>Seat 12</title></rect>
+              <rect class="plan-seat" data-seat="13" data-x="64.05" data-y="308.39" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(64.05 308.39) rotate(-115.00)"><title>Seat 13</title></rect>
+              <rect class="plan-seat" data-seat="14" data-x="70.10" data-y="320.00" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(70.10 320.00) rotate(-120.00)"><title>Seat 14</title></rect>
+              <rect class="plan-seat" data-seat="15" data-x="77.13" data-y="331.04" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(77.13 331.04) rotate(-125.00)"><title>Seat 15</title></rect>
+              <rect class="plan-seat" data-seat="16" data-x="85.09" data-y="341.42" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(85.09 341.42) rotate(-130.00)"><title>Seat 16</title></rect>
+              <rect class="plan-seat" data-seat="17" data-x="93.93" data-y="351.07" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(93.93 351.07) rotate(-135.00)"><title>Seat 17</title></rect>
+              <rect class="plan-seat" data-seat="18" data-x="103.58" data-y="359.91" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(103.58 359.91) rotate(-140.00)"><title>Seat 18</title></rect>
+              <rect class="plan-seat" data-seat="19" data-x="113.96" data-y="367.87" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(113.96 367.87) rotate(-145.00)"><title>Seat 19</title></rect>
+              <rect class="plan-seat" data-seat="20" data-x="125.00" data-y="374.90" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(125.00 374.90) rotate(-150.00)"><title>Seat 20</title></rect>
+              <rect class="plan-seat" data-seat="21" data-x="136.61" data-y="380.95" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(136.61 380.95) rotate(-155.00)"><title>Seat 21</title></rect>
+              <rect class="plan-seat" data-seat="22" data-x="148.70" data-y="385.95" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(148.70 385.95) rotate(-160.00)"><title>Seat 22</title></rect>
+              <rect class="plan-seat" data-seat="23" data-x="161.18" data-y="389.89" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(161.18 389.89) rotate(-165.00)"><title>Seat 23</title></rect>
+              <rect class="plan-seat" data-seat="24" data-x="322.87" data-y="158.96" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(322.87 158.96) rotate(55.00)"><title>Seat 24</title></rect>
+              <rect class="plan-seat" data-seat="25" data-x="329.62" data-y="169.51" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(329.62 169.51) rotate(59.78)"><title>Seat 25</title></rect>
+              <rect class="plan-seat" data-seat="26" data-x="335.46" data-y="180.58" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(335.46 180.58) rotate(64.57)"><title>Seat 26</title></rect>
+              <rect class="plan-seat" data-seat="27" data-x="340.36" data-y="192.10" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(340.36 192.10) rotate(69.35)"><title>Seat 27</title></rect>
+              <rect class="plan-seat" data-seat="28" data-x="344.28" data-y="203.98" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(344.28 203.98) rotate(74.13)"><title>Seat 28</title></rect>
+              <rect class="plan-seat" data-seat="29" data-x="347.20" data-y="216.16" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(347.20 216.16) rotate(78.91)"><title>Seat 29</title></rect>
+              <rect class="plan-seat" data-seat="30" data-x="349.09" data-y="228.53" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(349.09 228.53) rotate(83.70)"><title>Seat 30</title></rect>
+              <rect class="plan-seat" data-seat="31" data-x="349.95" data-y="241.02" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(349.95 241.02) rotate(88.48)"><title>Seat 31</title></rect>
+              <rect class="plan-seat" data-seat="32" data-x="349.76" data-y="253.53" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(349.76 253.53) rotate(93.26)"><title>Seat 32</title></rect>
+              <rect class="plan-seat" data-seat="33" data-x="348.52" data-y="265.99" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(348.52 265.99) rotate(98.04)"><title>Seat 33</title></rect>
+              <rect class="plan-seat" data-seat="34" data-x="346.26" data-y="278.30" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(346.26 278.30) rotate(102.83)"><title>Seat 34</title></rect>
+              <rect class="plan-seat" data-seat="35" data-x="342.97" data-y="290.38" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(342.97 290.38) rotate(107.61)"><title>Seat 35</title></rect>
+              <rect class="plan-seat" data-seat="36" data-x="338.69" data-y="302.14" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(338.69 302.14) rotate(112.39)"><title>Seat 36</title></rect>
+              <rect class="plan-seat" data-seat="37" data-x="333.44" data-y="313.50" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(333.44 313.50) rotate(117.17)"><title>Seat 37</title></rect>
+              <rect class="plan-seat" data-seat="38" data-x="327.27" data-y="324.39" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(327.27 324.39) rotate(121.96)"><title>Seat 38</title></rect>
+              <rect class="plan-seat" data-seat="39" data-x="320.21" data-y="334.73" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(320.21 334.73) rotate(126.74)"><title>Seat 39</title></rect>
+              <rect class="plan-seat" data-seat="40" data-x="312.31" data-y="344.44" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(312.31 344.44) rotate(131.52)"><title>Seat 40</title></rect>
+              <rect class="plan-seat" data-seat="41" data-x="303.62" data-y="353.45" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(303.62 353.45) rotate(136.30)"><title>Seat 41</title></rect>
+              <rect class="plan-seat" data-seat="42" data-x="294.22" data-y="361.72" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(294.22 361.72) rotate(141.09)"><title>Seat 42</title></rect>
+              <rect class="plan-seat" data-seat="43" data-x="284.16" data-y="369.16" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(284.16 369.16) rotate(145.87)"><title>Seat 43</title></rect>
+              <rect class="plan-seat" data-seat="44" data-x="273.52" data-y="375.75" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(273.52 375.75) rotate(150.65)"><title>Seat 44</title></rect>
+              <rect class="plan-seat" data-seat="45" data-x="262.36" data-y="381.42" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(262.36 381.42) rotate(155.43)"><title>Seat 45</title></rect>
+              <rect class="plan-seat" data-seat="46" data-x="250.77" data-y="386.15" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(250.77 386.15) rotate(160.22)"><title>Seat 46</title></rect>
+              <rect class="plan-seat" data-seat="47" data-x="238.82" data-y="389.89" x="-5" y="-4" width="10" height="8" rx="2" transform="translate(238.82 389.89) rotate(165.00)"><title>Seat 47</title></rect>
             </g>
             <g fill="#a1a597" font-size="10" text-anchor="middle">
-              <text x="69" y="141">1</text><text x="331" y="141">28</text>
-              <text x="153" y="418">27</text><text x="247" y="418">54</text>
+              <text x="69" y="141">1</text><text x="331" y="141">24</text>
+              <text x="153" y="418">23</text><text x="247" y="418">47</text>
             </g>
             <g id="seat-marker" aria-hidden="true"></g>
           </svg>
@@ -239,6 +238,7 @@
         <div class="selected-number"><small>Seat</small><span id="dialog-number"></span></div>
       </div>
       <p class="seat-dialog-location" id="dialog-location"></p>
+      <div class="guest-notes" id="dialog-notes" hidden></div>
       <div class="seat-dialog-map"></div>
       <div class="map-legend"><span><i class="legend-dot yours" aria-hidden="true"></i>Your glowing seat</span></div>
       <button class="seat-dialog-back" type="button">← Search another guest</button>
@@ -247,211 +247,54 @@
     <script>
       // Update this list for your next event.
       const guests = [
-  {
-    "name": "Dias Suleimenov",
-    "number": 1
-  },
-  {
-    "name": "Alina Suleimenova",
-    "number": 2
-  },
-  {
-    "name": "Sofiya Suleimenova",
-    "number": 3
-  },
-  {
-    "name": "Timur Suleimenov",
-    "number": 4
-  },
-  {
-    "name": "Amina Ramazanova",
-    "number": 5
-  },
-  {
-    "name": "Nursultan Suleimenov",
-    "number": 6
-  },
-  {
-    "name": "Sara Suleimenova",
-    "number": 7
-  },
-  {
-    "name": "Antoine Khairallah",
-    "number": 8
-  },
-  {
-    "name": "Anwar Rizk",
-    "number": 9
-  },
-  {
-    "name": "Nour Rizk",
-    "number": 10
-  },
-  {
-    "name": "Rachid Rizk",
-    "number": 11
-  },
-  {
-    "name": "Chahrazad Rizk",
-    "number": 12
-  },
-  {
-    "name": "Monika Schmutz",
-    "number": 13
-  },
-  {
-    "name": "Lubna Allana",
-    "number": 14
-  },
-  {
-    "name": "Tabbassum Sajwani",
-    "number": 15
-  },
-  {
-    "name": "Anel Udovichuk конина",
-    "number": 16
-  },
-  {
-    "name": "Aida Aliyeva",
-    "number": 17
-  },
-  {
-    "name": "Nurali Aliyev",
-    "number": 18
-  },
-  {
-    "name": "Julia Fomichev",
-    "number": 19
-  },
-  {
-    "name": "Hesham Amer",
-    "number": 20
-  },
-  {
-    "name": "H.S.H. Princess Tilsim von Liechtenstein",
-    "number": 21
-  },
-  {
-    "name": "H.S.H. Princess Laetitia von Liechtenstein",
-    "number": 22
-  },
-  {
-    "name": "Carol Asscher",
-    "number": 23
-  },
-  {
-    "name": "Simon de Puri",
-    "number": 24
-  },
-  {
-    "name": "Svetlana Cheshinskya",
-    "number": 25
-  },
-  {
-    "name": "Rustam Aksenenko",
-    "number": 26
-  },
-  {
-    "name": "Polina Aksenenko",
-    "number": 27
-  },
-  {
-    "name": "Alexandra de Pfyfer",
-    "number": 28
-  },
-  {
-    "name": "Nachson Mimran",
-    "number": 29
-  },
-  {
-    "name": "Nathalia Mimran",
-    "number": 30
-  },
-  {
-    "name": "Arieh Mimran",
-    "number": 31
-  },
-  {
-    "name": "Petra Nemcova",
-    "number": 32
-  },
-  {
-    "name": "Benjamin Larretche",
-    "number": 33
-  },
-  {
-    "name": "Bodhi",
-    "number": 34
-  },
-  {
-    "name": "Iman de Saussure",
-    "number": 35
-  },
-  {
-    "name": "Jacques de Saussure",
-    "number": 36
-  },
-  {
-    "name": "Caroline Scheufele",
-    "number": 37
-  },
-  {
-    "name": "Olga Vashilina",
-    "number": 38
-  },
-  {
-    "name": "Valentina Volchkova",
-    "number": 39
-  },
-  {
-    "name": "Jean-Christophe",
-    "number": 40
-  },
-  {
-    "name": "Clarina Hocke",
-    "number": 41
-  },
-  {
-    "name": "Swami Chidananda",
-    "number": 42
-  },
-  {
-    "name": "Nastya Stopnevich",
-    "number": 43
-  },
-  {
-    "name": "Sergei Stopnevich",
-    "number": 44
-  },
-  {
-    "name": "Anastasia Bukhman",
-    "number": 45
-  },
-  {
-    "name": "Angelo Brambilla",
-    "number": 46
-  },
-  {
-    "name": "Olivier Gudin",
-    "number": 47
-  },
-  {
-    "name": "Sara Hekal",
-    "number": 48
-  },
-  {
-    "name": "Polina Kitsenko",
-    "number": 49
-  },
-  {
-    "name": "Roman Yemeljanov",
-    "number": 50
-  },
-  {
-    "name": "Kristina Yemeljanova",
-    "number": 51
-  }
-];
+        {"name":"Dias Suleimenov","number":1,"menu":"Ест конину"},
+        {"name":"Alina Suleimenova","number":2,"menu":"Ест конину"},
+        {"name":"Timur Suleimenov","number":3,"menu":"Ест конину"},
+        {"name":"Amina Ramazanova","number":4,"menu":"Ест конину"},
+        {"name":"Nursultan Suleimenov","number":5,"menu":"Ест конину"},
+        {"name":"Sara Suleimenova","number":6,"menu":"Ест конину"},
+        {"name":"Antoine Khairallah","number":7,"menu":"Ест конину; Аллергия на креветки и shellfish; не есть Tabasco и chilli sauce"},
+        {"name":"Anwar Rizk","number":8,"menu":"Не ест конину"},
+        {"name":"Nour Rizk","number":9,"menu":"Ест конину"},
+        {"name":"Rachid Rizk","number":10,"menu":"Ест конину"},
+        {"name":"Chahrazad Rizk","number":11,"menu":"Ест конину"},
+        {"name":"Monika Schmutz","number":12,"menu":"Ест конину; Аллергия на кинзу"},
+        {"name":"Lubna Allana","number":13,"menu":"Не ест конину"},
+        {"name":"Tabassum Sajwani","number":14,"menu":"Не ест конину"},
+        {"name":"Anel Udovichuk","number":15,"menu":"Ест конину"},
+        {"name":"Aida Aliyeva","number":16,"menu":"Ест конину"},
+        {"name":"Julia Fomicheva","number":17,"menu":"Ест конину"},
+        {"name":"H.S.H. Princess Tilsim von Liechtenstein","number":18,"menu":"Не ест конину; Аллергия на семейство луковых"},
+        {"name":"Carol Asscher","number":19,"menu":"Ест конину"},
+        {"name":"Simon de Pury","number":20,"menu":"Ест конину"},
+        {"name":"Svetlana Cheshinskya","number":21,"menu":"Ест конину"},
+        {"name":"Alexandra de Pfyfer","number":22,"menu":"Не ест конину"},
+        {"name":"Nachson Mimran","number":23,"menu":"Ест конину"},
+        {"name":"Arieh Mimran","number":24,"menu":"Ест конину"},
+        {"name":"Benjamin Larretche","number":25,"menu":"Не ест мясо и птицу, ест рыбу"},
+        {"name":"Iman de Saussure","number":26,"menu":"Не ест конину"},
+        {"name":"Jacques de Saussure","number":27,"menu":"Не ест конину"},
+        {"name":"Caroline Scheufele","number":28,"menu":"Не ест конину"},
+        {"name":"Olga Vashilina","number":29,"menu":"Не ест конину"},
+        {"name":"Valentina Volchkova","number":30,"menu":"Не ест конину"},
+        {"name":"Jean-Christophe Hocke","number":31,"menu":"Ест конину"},
+        {"name":"Clarina Hocke","number":32,"menu":"Не ест конину"},
+        {"name":"Nastya Stopnevich","number":33,"menu":"Ест конину"},
+        {"name":"Sergei Stopnevich","number":34,"menu":"Ест конину"},
+        {"name":"Angelo Brambilla","number":35,"menu":"Ест конину"},
+        {"name":"Olivier Gudin","number":36,"menu":"Ест конину"},
+        {"name":"Sara Hekal","number":37,"menu":"Не ест конину"},
+        {"name":"Polina Kitsenko","number":38,"menu":"Не ест конину"},
+        {"name":"Aktan Abdykerim","number":39,"menu":"Ест конину"},
+        {"name":"Kamilla Kazhymuratova","number":40,"menu":"Ест конину"},
+        {"name":"Abi Abdykerim","number":41,"menu":"Ест конину"},
+        {"name":"H.E. Dr. José Ataide Amaral","number":42,"menu":"Не ест конину"},
+        {"name":"Swami Chidananda","number":43,"menu":"Vegan"},
+        {"name":"Petra Nemcova","number":44,"menu":"Vegan"},
+        {"name":"Hesham Amer","number":45,"menu":"Не ест мясо и птицу, ест рыбу"},
+        {"name":"Bodhi","number":46,"menu":"Не ест мясо и птицу, ест рыбу; Детское меню","details":"6 лет"},
+        {"name":"H.S.H. Princess Laetitia von Liechtenstein","number":47,"menu":"Детское меню","details":"8 лет"}
+      ];
 
       const input = document.querySelector("#guest-search");
       const results = document.querySelector("#results");
@@ -465,6 +308,7 @@
       const venueMap = document.querySelector(".venue-map");
       const mapHomeLegend = layout.querySelector(".map-legend");
       const dialogMap = document.querySelector(".seat-dialog-map");
+      const guestNotes = document.querySelector("#dialog-notes");
       const defaultDescription = mapDescription.textContent;
       document.querySelector("#guest-count").textContent = guests.length + " guests";
 
@@ -488,16 +332,23 @@
         document.querySelectorAll(".plan-seat.active").forEach(seat => seat.classList.remove("active"));
         marker.replaceChildren();
         mapHeading.textContent = "Seating plan";
-        mapStatus.textContent = "54 seats. The stage is at the top of the map.";
+        mapStatus.textContent = "47 seats: 23 on the left, 24 on the right. The stage is at the top.";
         mapStatus.classList.remove("selected");
         mapDescription.textContent = defaultDescription;
       }
       function seatLocation(number) {
         // Numbering confirmed by the event organizer:
-        // 1–27 down the left side; 28–54 down the right side from the stage.
-        const side = number <= 27 ? "Left" : "Right";
-        const position = number <= 27 ? number : number - 27;
+        // Updated plan: 1–23 on the left; 24–47 on the right, both from the stage.
+        const side = number <= 23 ? "Left" : "Right";
+        const position = number <= 23 ? number : number - 23;
         return side + " table · position " + position + " from the stage";
+      }
+      function renderGuestNotes(guest) {
+        const notes = [["Menu details", guest.menu], ["Guest details", guest.details]]
+          .filter(([, text]) => Boolean(text));
+        guestNotes.innerHTML = notes.map(([label, text]) => '<p><strong class="guest-note-label">' + label + '</strong><span class="guest-note-copy">' + escapeHtml(text) + '</span></p>').join("");
+        guestNotes.hidden = notes.length === 0;
+        seatDialog.setAttribute("aria-describedby", notes.length ? "dialog-location dialog-notes" : "dialog-location");
       }
       function showSeat(guest) {
         clearSelectedSeat();
@@ -518,6 +369,7 @@
         document.querySelector("#dialog-name").textContent = guest.name;
         document.querySelector("#dialog-number").textContent = guest.number;
         document.querySelector("#dialog-location").textContent = seatLocation(guest.number);
+        renderGuestNotes(guest);
         dialogMap.appendChild(venueMap);
         document.body.classList.add("seat-view-open");
         seatDialog.showModal();
@@ -537,6 +389,7 @@
         layout.insertBefore(venueMap, mapHomeLegend);
         document.body.classList.remove("seat-view-open");
         clearSelectedSeat();
+        renderGuestNotes({});
       }
       function resetSearch() {
         closeSeatView();
